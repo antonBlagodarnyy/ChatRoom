@@ -32,7 +32,6 @@ export class InputBoxComponent {
   inputContent?: string;
   constructor(private chatService: ChatService) {}
   onMsgSent() {
-    console.log(this.inputContent);
     if (this.inputContent) this.chatService.sendMsg(this.inputContent);
   }
 }

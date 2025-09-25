@@ -6,8 +6,10 @@ import { NgFor } from '@angular/common';
 @Component({
   selector: 'app-messages',
   imports: [NgFor, MessageComponent],
-  template: `<div class="container-messages" *ngFor="let msg of messages()">
-    <app-message [message]="msg"></app-message>
+  template: ` <div class="container-messages">
+    <div *ngFor="let msg of messages()">
+      <app-message [message]="msg"></app-message>
+    </div>
   </div>`,
   styles: `.container-messages{
     height: 60vh;
