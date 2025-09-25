@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../../Services/chat.service';
 import { MessagesComponent } from '../../Components/messages/messages.component';
+import { InputBoxComponent } from '../../Components/messages/input-box/input-box.component';
+import { IMessage } from '../../Interfaces/IMessage';
 
 @Component({
   selector: 'app-chat',
-  imports: [MessagesComponent],
-  template: `<app-messages [messages]=""></app-messages>`,
+  imports: [MessagesComponent, InputBoxComponent],
+  template: `<app-messages [messages]="messages" /><app-input-box />`,
 })
 export class ChatComponent implements OnInit {
-  
+  messages: IMessage[] | undefined;
   constructor(private chatService: ChatService) {}
 
   ngOnInit(): void {

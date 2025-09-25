@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
 import { IMessage } from '../../Interfaces/IMessage';
-import { NgForOf } from '../../../../node_modules/@angular/common/common_module.d-NEF7UaHr';
 import { MessageComponent } from './message/message.component';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-messages',
-  imports: [NgForOf, MessageComponent],
+  imports: [NgFor, MessageComponent],
   template: `<div class="container-messages" *ngFor="let msg of messages()">
     <app-message [message]="msg"></app-message>
   </div>`,
