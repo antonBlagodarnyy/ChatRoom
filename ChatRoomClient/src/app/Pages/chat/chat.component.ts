@@ -20,7 +20,7 @@ import { Message } from '@stomp/stompjs';
     </div>
   `,
   styles: `.container{
-    padding:10vh;
+    padding-top:10vh;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -43,5 +43,8 @@ export class ChatComponent implements OnInit {
         if (this.messages)
           this.messages.update((messages) => [...(messages ?? []), msg]);
       });
+      this.chatService.getMsgs().subscribe((messages)=>{
+        this.messages.set(messages);
+      })
   }
 }
