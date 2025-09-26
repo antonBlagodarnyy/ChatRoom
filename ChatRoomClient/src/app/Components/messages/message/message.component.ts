@@ -15,7 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
     border-radius:1vh;
     display: flex;
     align-items: center;
-      background-color:lightgrey;
+      background-color:#EBEBEB;
   }
   .text{
     margin-left:2vh;
