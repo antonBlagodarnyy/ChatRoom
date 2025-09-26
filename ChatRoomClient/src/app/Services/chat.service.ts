@@ -23,7 +23,7 @@ export class ChatService {
     if (this.ws && this.nickname) {
       this.ws.publish({
         destination: '/ws/hello',
-        body: JSON.stringify({ from: this.nickname, text: msgText }),
+        body: JSON.stringify({ sender: this.nickname, text: msgText }),
       });
     }
   }
