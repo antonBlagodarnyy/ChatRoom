@@ -49,7 +49,7 @@ export class WelcomeComponent {
   nickname?: string;
   onEnter() {
     if (this.nickname) {
-      this.chatService.nickname = this.nickname;
+      this.chatService.saveNickname(this.nickname);
       this.router.navigate(['chat']);
     }
   }

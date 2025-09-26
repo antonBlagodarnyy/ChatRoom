@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, OnInit } from '@angular/core';
 import { IMessage } from '../../../Interfaces/IMessage';
 import { MatChipsModule } from '@angular/material/chips';
 
@@ -7,15 +7,23 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [MatChipsModule],
   template: `<div class="container-messages-message">
     <mat-chip>{{ message().from }}</mat-chip>
-    <span>{{ message().txt }}</span>
+    <span class="text">{{ message().text }}</span>
   </div>`,
   styles: `
   .container-messages-message{
+    margin:2vh;
+    border-radius:1vh;
     display: flex;
     align-items: center;
+      background-color:lightgrey;
   }
-  `,
+  .text{
+    margin-left:2vh;
+  }`,
 })
-export class MessageComponent {
+export class MessageComponent implements OnInit{
+ 
   message = input.required<IMessage>();
+   ngOnInit(): void {
+  }
 }
