@@ -6,7 +6,7 @@ import { MatChipsModule } from '@angular/material/chips';
   selector: 'app-message',
   imports: [MatChipsModule],
   template: `<div class="container-messages-message">
-    <mat-chip>{{ message().from }}</mat-chip>
+    <mat-chip>{{ message().sender }}</mat-chip>
     <span class="text">{{ message().text }}</span>
   </div>`,
   styles: `
