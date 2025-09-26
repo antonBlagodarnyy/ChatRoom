@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import com.ChatRoomWS.ChatRoomWs.Dto.MessageRequest;
 import com.ChatRoomWS.ChatRoomWs.Entities.Message;
 import com.ChatRoomWS.ChatRoomWs.Services.MessagesService;
 
@@ -16,10 +17,16 @@ public class WsMessageController {
 
 	@MessageMapping("/hello")
 	@SendTo("/topic/messages")
-	public Message message(Message message) {
-		if (message.getSender().length() <= 25 && message.getText().length() <= 100) {
-			messagesService.saveMessage(message);
-			return message;
+	public Message message(MessageRequest messageRequest) {
+		
+		if (messageRequest.getSender().length() <= 25 && messageRequest.getText().length() <= 100) {
+			
+			Message msg = new Message();
+			
+			msg.setSender(messageRequest.getSender());
+			msg.setText(messageRequest.getText());
+			messagesService.saveMessage(msg);
+			return msg;
 		}
 		return null;
 	}
