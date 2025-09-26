@@ -15,8 +15,8 @@ public class MessagesService {
 	@Autowired
 	private MessageRepository messageRepository;
 
-	public ArrayList<Message> getMessages() {
-		return new ArrayList<Message>((Collection<? extends Message>) messageRepository.findAll());
+	public Iterable<Message> getMessages() {
+		return  messageRepository.findAll();
 	}
 
 	public void saveMessage(Message message) {
