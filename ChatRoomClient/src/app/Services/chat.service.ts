@@ -1,14 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import {  RxStomp } from '@stomp/rx-stomp';
 import { IMessage } from '../Interfaces/IMessage';
-import { RxStomp } from '@stomp/rx-stomp';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
+  constructor(private http: HttpClient) {}
+
   nickname: string | undefined;
-  constructor() {}
   ws: RxStomp | undefined;
 
   connect() {
@@ -27,6 +28,11 @@ export class ChatService {
       });
     }
   }
+
+  getMsgs() {
+    return this.http.get<IMessage[]>('http://localhost:8081/messages/all');
+  }
+
   saveNickname(nickname: string) {
     this.nickname = nickname;
     localStorage.setItem('nickname', nickname);
