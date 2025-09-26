@@ -1,22 +1,47 @@
 package com.ChatRoomWS.ChatRoomWs.Entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="messages")
 public class Message {
 
-	private String from;
-	private String text;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	
+	
 
-	public Message(String text, String from) {
+	private String sender;
+	private String text;
+	
+public Message() {
 		super();
-		this.from = from;
+	}
+	public Message(String text, String sender) {
+		super();
+		this.sender = sender;
 		this.text = text;
 	}
 
-	public String getFrom() {
-		return from;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public String getSender() {
+		return sender;
+	}
+
+	public void setSender(String from) {
+		this.sender = from;
 	}
 
 	public String getText() {
