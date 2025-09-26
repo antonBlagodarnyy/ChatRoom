@@ -1,5 +1,6 @@
 package com.ChatRoomWS.ChatRoomWs.Config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -10,6 +11,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class MessageBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
+	@Value("${CLIENT_URL}")
+	private String clientUrl;
+	
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		config.enableSimpleBroker("/topic");
@@ -18,6 +22,6 @@ public class MessageBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/ws-connection").setAllowedOriginPatterns("http://localhost:*");
+		registry.addEndpoint("/ws-connection").setAllowedOriginPatterns(clientUrl);
 	}
 }

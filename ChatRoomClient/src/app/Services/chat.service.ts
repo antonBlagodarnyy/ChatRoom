@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {  RxStomp } from '@stomp/rx-stomp';
+import { RxStomp } from '@stomp/rx-stomp';
 import { IMessage } from '../Interfaces/IMessage';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class ChatService {
 
   connect() {
     this.ws = new RxStomp();
-    this.ws?.configure({ brokerURL: 'ws://localhost:8081/ws-connection' });
+    this.ws?.configure({ brokerURL: environment.wsUrl + 'ws-connection' });
     this.ws?.activate();
     console.log(this.ws);
     return this.ws;
@@ -30,7 +31,7 @@ export class ChatService {
   }
 
   getMsgs() {
-    return this.http.get<IMessage[]>('http://localhost:8081/messages/all');
+    return this.http.get<IMessage[]>(environment.apiUrl + 'messages/all');
   }
 
   saveNickname(nickname: string) {
