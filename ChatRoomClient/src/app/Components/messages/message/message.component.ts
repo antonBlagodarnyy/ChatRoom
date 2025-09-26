@@ -7,14 +7,19 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [MatChipsModule],
   template: `<div class="container-messages-message">
     <mat-chip>{{ message().from }}</mat-chip>
-    <span>{{ message().text }}</span>
+    <span class="text">{{ message().text }}</span>
   </div>`,
   styles: `
   .container-messages-message{
+    margin:2vh;
+    border-radius:1vh;
     display: flex;
     align-items: center;
+      background-color:lightgrey;
   }
-  `,
+  .text{
+    margin-left:2vh;
+  }`,
 })
 export class MessageComponent implements OnInit{
  
