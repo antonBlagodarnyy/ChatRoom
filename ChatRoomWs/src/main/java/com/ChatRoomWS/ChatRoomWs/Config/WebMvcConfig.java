@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-	@Value("${CLIENT_URL}")
+	@Value("${client.url}")
 	private String clientUrl;
 
 	@Override

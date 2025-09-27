@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class MessageBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
-	@Value("${CLIENT_URL}")
+	@Value("${client.url}")
 	private String clientUrl;
 	
 	@Override
