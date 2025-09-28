@@ -21,5 +21,5 @@ COPY --from=build /app/target/ChatRoomWs-0.0.1-SNAPSHOT.jar app.jar
 # Optional: verify
 RUN ls -l /app
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
 EXPOSE 8081
