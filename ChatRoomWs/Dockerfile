@@ -7,7 +7,7 @@ COPY src ./src
 RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env \
     export $(grep -v '^#' /etc/secrets/.env | xargs) && \
     echo "Building app with DB $DB_URL and API_KEY $API_KEY" && \
-    ./mvnw clean package
+    mvn clean package
 	
 
 ARG JAR_FILE=target/*.jar
