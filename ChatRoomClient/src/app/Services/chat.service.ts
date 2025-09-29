@@ -17,7 +17,7 @@ export class ChatService {
     this.ws = new RxStomp();
     this.ws?.configure({ brokerURL: environment.wsUrl + 'ws-connection' });
     this.ws?.activate();
-    console.log(this.ws);
+
     return this.ws;
   }
   sendMsg(msgText: string) {
