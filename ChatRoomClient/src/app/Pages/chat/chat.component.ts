@@ -47,7 +47,8 @@ export class ChatComponent implements OnInit {
     ws.connected$.subscribe(() => {
       // connection established
       clearTimeout(spinnerTimeout);
-      if (spinnerRef) {
+      const messages = this.messages();
+      if (spinnerRef && messages) {
         spinnerRef.close();
       }
     });
