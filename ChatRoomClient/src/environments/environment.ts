@@ -1,4 +1,4 @@
 export const environment = {
-  wsUrl: '',
-  apiUrl: '',
+  wsUrl: 'wss://chatroom-rhid.onrender.com/',
+  apiUrl: 'https://chatroom-rhid.onrender.com/',
 };
