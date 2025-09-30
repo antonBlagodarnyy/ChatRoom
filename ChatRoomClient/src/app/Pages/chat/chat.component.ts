@@ -71,7 +71,7 @@ export class ChatComponent implements OnInit {
     this.chatService
       .getMsgs()
       .pipe(
-        retry({ delay: 100 }) // retry up to 3 times before failing
+        retry({ delay: 3000 }) // retry up to 3 times before failing
       )
       .subscribe((messages) => {
         this.messages.next(messages);
