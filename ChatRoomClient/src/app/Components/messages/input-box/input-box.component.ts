@@ -33,10 +33,13 @@ import { ErrorStateMatcher } from '@angular/material/core';
   styles: `
   .container-input-box{
     display: flex;
+    justify-content:center;
+    width:100%;
 
   }
   .form-field{
     padding: 2vh;
+    width:90%;
   }
   .button-enter{
     margin-top: 2vh;
