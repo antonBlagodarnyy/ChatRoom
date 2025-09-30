@@ -19,10 +19,9 @@ import { NgFor } from '@angular/common';
   </div>`,
   styles: `.container-messages{
     border: 1px solid black;
-    border-radius:5%;
+    border-radius:5vh;
     padding:2vh;
     height: 60vh;
-    width:80vh;
     overflow: auto;
   }
   /* Hide scrollbar for Chrome, Safari and Opera */

@@ -17,12 +17,18 @@ import { BehaviorSubject, combineLatest, retry } from 'rxjs';
     </div>
   `,
   styles: `.container{
-    padding-top:10vh;
+    height:100%;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
   
+  }
+  app-messages{
+    width:80%;
+  }
+  app-input-box{
+    width:90%;
   }`,
 })
 export class ChatComponent implements OnInit {
