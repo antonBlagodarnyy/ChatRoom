@@ -12,15 +12,20 @@ import { ChatService } from '../../Services/chat.service';
   template: `
     <div class="container">
       <h1>ChatRoom</h1>
+      <form (submit)="onEnter()">
+
+     
       <div class="container-nickname">
+
         <mat-form-field class="form-field" appearance="outline">
           <mat-label>Nickname</mat-label>
-          <input matInput required [(ngModel)]="nickname" />
+          <input matInput required name=nickname [(ngModel)]="nickname" />
           <mat-hint>Choose a nickname</mat-hint>
         </mat-form-field>
 
-        <button class="button-enter" (click)="onEnter()" mat-fab>Enter</button>
+        <button type="submit" class="button-enter" mat-fab>Enter</button>
       </div>
+       </form>
     </div>
   `,
   styles: `
