@@ -1,28 +1,36 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, Signal } from '@angular/core';
 import { ChatService } from '../../Services/chat.service';
 import { MessagesComponent } from '../../Components/messages/messages.component';
 import { InputBoxComponent } from '../../Components/messages/input-box/input-box.component';
-import { IMessage } from '../../Interfaces/IMessage';
-import { Message } from '@stomp/stompjs';
+import { Message } from '../../Interfaces/Message';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { LoadingComponent } from '../../Components/loading/loading.component';
-import { BehaviorSubject, combineLatest, retry } from 'rxjs';
+import { Router } from '@angular/router';
+import { ErrorComponent } from '../../Components/ws-error/error.component';
 
 @Component({
   selector: 'app-chat',
   imports: [MessagesComponent, InputBoxComponent],
   template: `
     <div class="container">
-      <app-messages [messages]="messages.getValue()" /><app-input-box />
+      <h2>
+        Current username:
+        <span class="nickname">{{ this.chatService.nickname() }}</span>
+      </h2>
+      <app-messages [messages]="this.messages" />
+      <app-input-box (onMsgSentEvent)="onMsgSent($event)" />
     </div>
   `,
   styles: `.container{
     height:100%;
+    margin-top: 5vh;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-  
+  }
+  .nickname{
+    color: var(--mat-sys-primary)
   }
   app-messages{
     width:80%;
@@ -31,56 +39,45 @@ import { BehaviorSubject, combineLatest, retry } from 'rxjs';
     width:90%;
   }`,
 })
-export class ChatComponent implements OnInit {
-  messages = new BehaviorSubject<IMessage[] | undefined>(undefined);
+export class ChatComponent implements OnInit, OnDestroy {
+  protected chatService = inject(ChatService);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
 
-  constructor(private chatService: ChatService, private dialogRef: MatDialog) {}
+  messages: Signal<Message[]> = toSignal(this.chatService.messages$, {
+    initialValue: [],
+  });
 
-  ngOnInit(): void {
-    let spinnerRef: any;
-    let spinnerTimeout: ReturnType<typeof setTimeout>;
-
-    // wait 300ms before showing spinner
-    spinnerTimeout = setTimeout(() => {
-      spinnerRef = this.dialogRef.open(LoadingComponent, {
-        disableClose: true,
+  errorSub = this.chatService.errorHappened$.subscribe((reason) => {
+    this.dialog
+      .open(ErrorComponent, { data: { reason: reason } })
+      .afterClosed()
+      .subscribe((retry) => {
+        retry ? this.connect() : this.router.navigate(['']);
       });
-    }, 300);
+  });
 
-    this.chatService.getNickname();
+  ngOnInit() {
+    this.connect();
+  }
 
-    //Tries to connect to the ws and gets the connection
-    const ws = this.chatService.connect();
+  ngOnDestroy(): void {
+    this.errorSub.unsubscribe();
+    this.chatService.disconnect();
+  }
 
-    //Combine the messages and the ws connection in to one
-    const serverConnected = combineLatest({
-      ws: ws.connected$,
-      msg: this.messages,
+  connect() {
+    this.chatService.connect$().subscribe({
+      next: (msg) => {
+        if (this.chatService.isMessage(msg))
+          this.chatService.onMessageReceived(msg);
+      },
+      error: (err) => {
+        console.log(err);
+      },
     });
-
-    //Once both are established, close spinner
-    serverConnected.subscribe((value) => {
-      if (value.ws && value.msg) {
-        clearTimeout(spinnerTimeout);
-        if (spinnerRef) spinnerRef.close();
-      }
-    });
-
-    //Subscribe to new msgs
-    ws?.watch('/topic/messages').subscribe((message: Message) => {
-      const msg = JSON.parse(message.body);
-      if (this.messages)
-        this.messages.next([...(this.messages.getValue() ?? []), msg]);
-    });
-
-    //Get previous msgs
-    this.chatService
-      .getMsgs()
-      .pipe(
-        retry({ delay: 3000 }) // retry up to 3 times before failing
-      )
-      .subscribe((messages) => {
-        this.messages.next(messages);
-      });
+  }
+  onMsgSent(newMsg: string) {
+    this.chatService.sendMsg(newMsg);
   }
 }

@@ -1,0 +1,29 @@
+/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+
+
+$theme: mat.define-theme(
+  (
+    color: (
+      primary: mat.$spring-green-palette,
+    ),
+    typography: (
+      plain-family: Roboto,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+:root {
+  
+  @include mat.theme($theme);
+  @include mat.all-component-themes($theme);
+  @include mat.typography-hierarchy($theme);
+  @include mat.system-level-colors($theme);
+}
+
+body {
+  margin: 0;
+}

@@ -12,20 +12,17 @@ import { ChatService } from '../../Services/chat.service';
   template: `
     <div class="container">
       <h1>ChatRoom</h1>
-      <form (submit)="onEnter()">
+      <form (ngSubmit)="onEnter()">
+        <div class="container-nickname">
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>Nickname</mat-label>
+            <input matInput required name="nickname" [(ngModel)]="nickname" />
+            <mat-hint>Choose a nickname</mat-hint>
+          </mat-form-field>
 
-     
-      <div class="container-nickname">
-
-        <mat-form-field class="form-field" appearance="outline">
-          <mat-label>Nickname</mat-label>
-          <input matInput required name=nickname [(ngModel)]="nickname" />
-          <mat-hint>Choose a nickname</mat-hint>
-        </mat-form-field>
-
-        <button type="submit" class="button-enter" mat-fab>Enter</button>
-      </div>
-       </form>
+          <button type="submit" class="button-enter" mat-fab>Enter</button>
+        </div>
+      </form>
     </div>
   `,
   styles: `
@@ -53,8 +50,10 @@ export class WelcomeComponent {
   constructor(private router: Router, private chatService: ChatService) {}
   nickname?: string;
   onEnter() {
+    console.log(this.nickname)
     if (this.nickname) {
-      this.chatService.saveNickname(this.nickname);
+      this.chatService.setNickname(this.nickname);
+      console.log(this.chatService.nickname())
       this.router.navigate(['chat']);
     }
   }
