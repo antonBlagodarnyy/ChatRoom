@@ -1,4 +1,4 @@
 export const environment = {
-  wsUrl: 'wss://chatroom-rhid.onrender.com/',
-  apiUrl: 'https://chatroom-rhid.onrender.com/',
+  wsUrl: 'wss://publicchatroom.duckdns.org/',
+  apiUrl: 'https://publicchatroom.duckdns.org/',
 };
