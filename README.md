@@ -1,5 +1,11 @@
 # ChatRoom
 
+## V1.1.1
+
+### Changes
+
+1. Code cleanup.
+
 ## V1.1.0
 
 ### Changes
@@ -20,4 +26,3 @@
 
 7. Ensured nicknames are unique per session.
 
-8. Added a "Change nickname" option.

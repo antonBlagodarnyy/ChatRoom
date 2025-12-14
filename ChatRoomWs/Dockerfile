@@ -5,11 +5,6 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env \
-    export $(grep -v '^#' /etc/secrets/.env | xargs) && \
-    echo "Building app with DB $DB_URL and API_KEY $API_KEY" && \
-    mvn clean package
-
 # Package stage
 FROM eclipse-temurin:21-jdk-alpine
 
@@ -22,4 +17,4 @@ COPY --from=build /app/target/ChatRoomWs-0.0.1-SNAPSHOT.jar app.jar
 RUN ls -l /app
 
 ENTRYPOINT ["java","-jar","app.jar"]
-EXPOSE 8081
+EXPOSE 8080

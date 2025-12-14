@@ -8,6 +8,7 @@ import java.time.Duration;
 public class CustomSession {
     private WebSocketSession webSocketSession;
     private Bucket bucket;
+    private String username;
 
     public CustomSession(WebSocketSession session) {
         this.bucket = Bucket.builder()
@@ -23,5 +24,13 @@ public class CustomSession {
 
     public Bucket getBucket() {
         return bucket;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 }

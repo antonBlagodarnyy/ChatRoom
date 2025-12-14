@@ -1,31 +1,36 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { Message } from '../Interfaces/Message';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, concat, EMPTY, Observable, Subject, tap } from 'rxjs';
+import { BehaviorSubject, EMPTY, forkJoin, Subject, tap } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { LoadingComponent } from '../Components/loading/loading.component';
-import { ErrorComponent } from '../Components/ws-error/error.component';
+import {
+  MessageConnectedUsersDto,
+  MessageDto,
+  MessageReceivedDto,
+} from '../Interfaces/message.dto';
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
   constructor(private http: HttpClient, private dialog: MatDialog) {}
-  private messagesSubject = new BehaviorSubject<Message[]>([]);
+  private messagesSubject = new BehaviorSubject<MessageReceivedDto[]>([]);
   readonly messages$ = this.messagesSubject.asObservable();
 
   nickname = signal(sessionStorage.getItem('nickname'));
-  private errorHappened = new Subject<string>();
+  usersConnected = signal(0);
+  private errorHappened = new Subject<{
+    reason: string | null;
+    code: number | null;
+  }>();
   readonly errorHappened$ = this.errorHappened.asObservable();
 
-  private wsSubject: WebSocketSubject<
-    Message | { sender: string; text: string }
-  > | null = null;
+  private wsSubject: WebSocketSubject<MessageDto> | null = null;
 
   private wsClosedManually = false;
 
-  setMessages(messages: Message[]) {
+  setMessages(messages: MessageReceivedDto[]) {
     this.messagesSubject.next(messages);
   }
 
@@ -38,40 +43,64 @@ export class ChatService {
 
       this.wsClosedManually = false;
 
-      return (this.wsSubject = webSocket<
-        Message | { sender: string; text: string }
-      >({
+      return (this.wsSubject = webSocket<MessageDto>({
         url: environment.wsUrl,
         openObserver: {
           next: () => {
-            clearTimeout(spinnerTimeout);
-            if (spinnerRef) spinnerRef.close();
-            this.getStoredMsgs$().subscribe({
-              error: (err) => {
-                const code = err.code || err.status || 409;
-                this.errorHappened.next(String(code));
-              },
-            });
+            const nickname = this.nickname();
+            if (nickname) {
+              this.wsSubject?.next({ type: 'CONNECTION', username: nickname });
+              clearTimeout(spinnerTimeout);
+              if (spinnerRef) spinnerRef.close();
+              this.getServerData$().subscribe({
+                error: (err) => {
+                  const code = err.code || err.status || 500;
+                  this.errorHappened.next({ reason: null, code: code });
+                },
+              });
+            } else this.wsSubject?.complete();
           },
         },
         closeObserver: {
           next: (ev) => {
+            console.log(ev);
             clearTimeout(spinnerTimeout);
             if (spinnerRef) spinnerRef.close();
-            if (!this.wsClosedManually) this.errorHappened.next(ev.reason);
+            if (!this.wsClosedManually)
+              this.errorHappened.next({ reason: ev.reason, code: ev.code });
           },
         },
       }));
     } else return EMPTY;
   }
-  getStoredMsgs$() {
+  private getServerData$() {
+    return forkJoin({
+      storedMsgs: this.getStoredMsgs$(),
+      connectedUsers: this.getConnectedUsers$(),
+    });
+  }
+  private getStoredMsgs$() {
     return this.http
-      .get<Message[]>(environment.apiUrl + 'messages/all', {
+      .get<MessageReceivedDto[]>(environment.apiUrl + 'messages/all', {
         observe: 'response',
       })
       .pipe(
         tap((res) => {
           if (res.body) this.setMessages(res.body);
+        })
+      );
+  }
+  private getConnectedUsers$() {
+    return this.http
+      .get<MessageConnectedUsersDto>(
+        environment.apiUrl + 'messages/connectedUsers',
+        {
+          observe: 'response',
+        }
+      )
+      .pipe(
+        tap((res) => {
+          if (res.body) this.usersConnected.set(res.body.connectedUsers);
         })
       );
   }
@@ -84,18 +113,15 @@ export class ChatService {
   sendMsg(msgText: string) {
     const nickname = this.nickname();
     if (this.wsSubject && nickname) {
-      this.wsSubject.next({ sender: nickname, text: msgText });
+      this.wsSubject.next({ type: 'SENT', sender: nickname, text: msgText });
     }
   }
-  onMessageReceived(msg: Message) {
+  onMessageReceived(msg: MessageReceivedDto) {
     this.messagesSubject.next([...this.messagesSubject.value, msg]);
   }
 
   setNickname(newNickname: string) {
     sessionStorage.setItem('nickname', newNickname);
     this.nickname.set(newNickname);
-  }
-  isMessage(msg: any): msg is Message {
-    return msg && typeof msg === 'object' && 'text' in msg && 'ts' in msg;
   }
 }

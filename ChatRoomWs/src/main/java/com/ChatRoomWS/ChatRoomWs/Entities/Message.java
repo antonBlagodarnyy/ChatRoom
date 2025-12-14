@@ -29,6 +29,11 @@ public class Message {
 
     }
 
+    public Message(String sender, String text) {
+        this.sender = sender;
+        this.text = text;
+    }
+
     public Message(Integer id, String sender, String text, Instant ts) {
         this.id = id;
         this.sender = sender;

@@ -4,9 +4,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
+import { ChatService } from '../../Services/chat.service';
+import { MatInput } from '@angular/material/input';
 
 type DialogData = {
   reason: string;
+  code: number;
 };
 @Component({
   selector: 'app-ws-error',
@@ -15,10 +20,23 @@ type DialogData = {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInput,
+    FormsModule,
   ],
   template: `<mat-card>
     <mat-card-header><h2>Disconnected</h2></mat-card-header>
-    <mat-card-content>{{ this.reason }}</mat-card-content>
+    <mat-card-content
+      ><p>{{ this.reason }}</p>
+      @if(this.code == 1008){
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Nickname</mat-label>
+        <input matInput required name="nickname" [(ngModel)]="nickname" />
+        <mat-hint>Choose a nickname</mat-hint>
+      </mat-form-field>
+
+      }
+    </mat-card-content>
     <mat-card-actions>
       <span>Retry?</span>
       @if(this.showReset()){
@@ -49,11 +67,15 @@ mat-card-actions{
   `,
 })
 export class ErrorComponent implements OnInit {
+  private chatService = inject(ChatService);
   private data = inject<DialogData>(MAT_DIALOG_DATA);
   private dialogRef = inject(MatDialogRef<ErrorComponent>);
 
   showReset = signal<boolean>(false);
   reason: string | null | number = null;
+  code = this.data.code;
+
+  nickname: string | null = null;
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -67,10 +89,16 @@ export class ErrorComponent implements OnInit {
     } else if (Number(reason) === 409) {
       this.reason =
         'The number of requests to the server was too high. Try again later.';
-    } else this.reason = reason;
+    } else if (Number(reason) === 500)
+      this.reason = 'Something went wrong in the server';
+    else this.reason = reason;
   }
 
   closeDialog(retry: boolean) {
+    if (this.nickname) {
+      const trimmed = this.nickname.trim();
+      this.chatService.setNickname(trimmed);
+    }
     this.dialogRef.close(retry);
   }
 }

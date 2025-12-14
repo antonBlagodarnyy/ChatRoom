@@ -6,9 +6,10 @@ import {
   Signal,
   viewChild,
 } from '@angular/core';
-import { Message } from '../../Interfaces/Message';
+
 import { MatCardModule } from '@angular/material/card';
 import { DatePipe } from '@angular/common';
+import { MessageReceivedDto } from '../../Interfaces/message.dto';
 
 @Component({
   selector: 'app-messages',
@@ -70,7 +71,7 @@ mat-card-content{
 })
 export class MessagesComponent implements AfterViewChecked {
   chatContainer = viewChild<ElementRef>('containerMessages');
-  messages = input.required<Signal<Message[]>>();
+  messages = input.required<Signal<MessageReceivedDto[]>>();
   ngAfterViewChecked(): void {
     const chatContainer = this.chatContainer();
     if (chatContainer) {

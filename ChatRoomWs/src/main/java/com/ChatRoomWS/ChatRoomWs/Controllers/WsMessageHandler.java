@@ -1,5 +1,8 @@
 package com.ChatRoomWS.ChatRoomWs.Controllers;
 
+import com.ChatRoomWS.ChatRoomWs.DTOs.BaseMessageDTO;
+import com.ChatRoomWS.ChatRoomWs.DTOs.MessageConnectionDTO;
+import com.ChatRoomWS.ChatRoomWs.DTOs.MessageNotSavedDTO;
 import com.ChatRoomWS.ChatRoomWs.Models.CustomSession;
 import com.ChatRoomWS.ChatRoomWs.Services.SessionService;
 import org.slf4j.Logger;
@@ -30,7 +33,6 @@ public class WsMessageHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-
         sessionService.getSession(session.getId())
                 .ifPresentOrElse(
                         customSession -> handleMessageForSession(customSession, session, message),
@@ -38,14 +40,28 @@ public class WsMessageHandler extends TextWebSocketHandler {
     }
 
     private void handleMessageForSession(CustomSession customSession, WebSocketSession session, TextMessage message) {
-        if (!customSession.getBucket().tryConsume(1)) {
-            closeSessionWithStatus(session, CloseStatus.SERVICE_OVERLOAD.withReason("You sent too many messages. Try again later."));
-        } else {
-            messagesService.processMessage(message).ifPresentOrElse(
-                    parsedMessage -> broadcastMessage(parsedMessage),
-                    () -> closeSessionWithStatus(session, CloseStatus.BAD_DATA.withReason("The message received was malformed, you were disconnected."))
-            );
-        }
+        messagesService.parseMessage(message).ifPresentOrElse(
+                parsedMessage -> {
+                    if (parsedMessage instanceof MessageConnectionDTO) {
+                        if (!sessionService.tryToAddUsername(session.getId(), ((MessageConnectionDTO) parsedMessage).username())) {
+                            closeSessionWithStatus(session, CloseStatus.POLICY_VIOLATION.withReason("Someone is already logged in with that username, try with a different one."));
+                        }
+                    } else {
+                        if (!customSession.getBucket().tryConsume(1)) {
+                            closeSessionWithStatus(session, CloseStatus.SERVICE_OVERLOAD.withReason("You sent too many messages. Try again later."));
+                        } else {
+                            messagesService.processMessage((MessageNotSavedDTO) parsedMessage).ifPresentOrElse(
+                                    this::broadcastMessage,
+                                    () -> closeSessionWithStatus(session, CloseStatus.BAD_DATA.withReason("The message received was malformed, you were disconnected."))
+                            );
+                        }
+                    }
+
+                },
+                () -> closeSessionWithStatus(session, CloseStatus.BAD_DATA.withReason("The message received was malformed, you were disconnected."))
+        );
+
+
     }
 
     private void broadcastMessage(TextMessage message) {
@@ -62,9 +78,25 @@ public class WsMessageHandler extends TextWebSocketHandler {
         });
     }
 
+    private void broadcastConnectedUsers() {
+
+        Optional<String> jsonOpt = messagesService.parseConnectedUsers();
+
+        if (jsonOpt.isEmpty()) {
+            LOG.error("[WsMessageHandler] Failed parsing message");
+            return;
+        }
+
+        String json = jsonOpt.get();
+
+        broadcastMessage(new TextMessage(json));
+
+    }
+
+
     private void closeSessionWithStatus(WebSocketSession session, CloseStatus closeStatus) {
         try {
-            LOG.info("[WsMessageHandler] CloseStatus triggered={}",closeStatus);
+            LOG.info("[WsMessageHandler] CloseStatus triggered={}", closeStatus);
             session.close(closeStatus);
         } catch (IOException e) {
             LOG.error("[WsMessageHandler] Failed to close session", e);
@@ -75,13 +107,12 @@ public class WsMessageHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessionService.addSession(session);
+        broadcastConnectedUsers();
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-
-
         sessionService.removeSession(session.getId());
-
+        broadcastConnectedUsers();
     }
 }

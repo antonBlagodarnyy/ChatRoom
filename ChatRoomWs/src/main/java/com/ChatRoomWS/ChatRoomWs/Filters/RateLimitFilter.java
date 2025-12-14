@@ -20,7 +20,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final Logger LOG = LoggerFactory.getLogger(RateLimitFilter.class);
 
     private static Bucket bucket = Bucket.builder()
-            .addLimit(limit -> limit.capacity(20).refillGreedy(10, Duration.ofMinutes(1)))
+            .addLimit(limit -> limit.capacity(50).refillGreedy(10, Duration.ofMinutes(1)))
             .build();
 
     @Override
