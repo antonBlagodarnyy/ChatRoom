@@ -1,7 +1,5 @@
 # ChatRoom
 
-## V1.1.1-next
-
 ### Changes
 
 1. Code cleanup.

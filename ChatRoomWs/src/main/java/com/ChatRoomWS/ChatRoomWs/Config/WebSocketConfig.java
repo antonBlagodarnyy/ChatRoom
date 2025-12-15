@@ -21,7 +21,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     private ConnectionLimitInterceptor connectionLimitInterceptor;
 
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(wsMessageHandler, "/chat")
+        registry.addHandler(wsMessageHandler, "/ws")
                 .addInterceptors(connectionLimitInterceptor)
                 .setAllowedOriginPatterns(clientUrl);
     }
