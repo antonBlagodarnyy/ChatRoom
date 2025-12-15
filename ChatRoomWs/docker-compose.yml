@@ -1,13 +1,12 @@
 services:
   app:
-    build:
-      context: .
-      args:
-        DB_URL: ${DB_URL}
-        DB_USER: ${DB_USER}
-        DB_PASSWORD: ${DB_PASSWORD}
-        CLIENT_URL: ${CLIENT_URL}
+    build: .
+    networks:
+      - my_network
     env_file: ./.env
 
     ports:
       - $APP_DOCKER_PORT:$APP_LOCAL_PORT
+networks:
+  my_network:
+    external: true
