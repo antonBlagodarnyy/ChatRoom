@@ -12,8 +12,8 @@ public class CustomSession {
 
     public CustomSession(WebSocketSession session) {
         this.bucket = Bucket.builder()
-                .addLimit(limit -> limit.capacity(5)
-                        .refillGreedy(1, Duration.ofMinutes(1)))
+                .addLimit(limit -> limit.capacity(100)
+                        .refillGreedy(10, Duration.ofMinutes(1)))
                 .build();
         this.webSocketSession = session;
     }
