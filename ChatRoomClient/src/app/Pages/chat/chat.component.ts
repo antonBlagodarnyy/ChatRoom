@@ -25,8 +25,6 @@ import { MessageDto, MessageReceivedDto } from '../../Interfaces/message.dto';
     </div>
   `,
   styles: `.container{
-    height:100%;
-    margin-top: 5vh;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -34,6 +32,9 @@ import { MessageDto, MessageReceivedDto } from '../../Interfaces/message.dto';
   }
   .nickname{
     color: var(--mat-sys-primary)
+  }
+  h2{
+    padding-top: 4vh;
   }
   app-messages{
     width:80%;

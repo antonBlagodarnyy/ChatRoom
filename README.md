@@ -1,8 +1,6 @@
 # ChatRoom
 
-### Changes
-
-1. Code cleanup.
+Public and open source Chat room.
 
 ## V1.1.0
 

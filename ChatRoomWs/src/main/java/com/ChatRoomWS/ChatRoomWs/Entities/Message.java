@@ -21,7 +21,7 @@ public class Message {
 	private String sender;
 	private String text;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+
     @CreationTimestamp
     private Instant ts;
 

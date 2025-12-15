@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+
 @Service
 public class MessagesService {
 
@@ -35,6 +37,7 @@ public class MessagesService {
     private static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
+        mapper.disable(WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
     }
 
@@ -79,7 +82,7 @@ public class MessagesService {
     private Optional<TextMessage> saveAndConvertToBroadcastMessage(MessageNotSavedDTO message) {
         try {
 
-            Message savedMessage = messageRepository.save(new Message(message.sender(), message.text()));
+            Message savedMessage = messageRepository.saveAndFlush(new Message(message.sender(), message.text()));
             String jsonPayload = objectMapper.writeValueAsString(
                     new MessageSavedDTO(
                             "RECEIVED",

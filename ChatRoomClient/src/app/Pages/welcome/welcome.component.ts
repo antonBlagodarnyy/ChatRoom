@@ -27,7 +27,7 @@ import { ChatService } from '../../Services/chat.service';
   `,
   styles: `
   .container {
-    height:90%;
+    margin-top: 10vh;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -36,7 +36,6 @@ import { ChatService } from '../../Services/chat.service';
   }
   .container-nickname{
     display: flex;
-
   }
   .form-field{
     padding: 2vh;

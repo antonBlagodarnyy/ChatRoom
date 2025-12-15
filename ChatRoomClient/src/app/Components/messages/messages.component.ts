@@ -36,7 +36,7 @@ import { MessageReceivedDto } from '../../Interfaces/message.dto';
     border: 1px solid black;
     border-radius:5vh;
     padding:2vh;
-    height: 60vh;
+    height: 55vh;
     overflow-y: auto;
   }
   mat-card{
